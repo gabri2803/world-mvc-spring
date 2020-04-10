@@ -78,7 +78,7 @@ public class WorldController {
 	}
 
 	@RequestMapping("/page-insert")
-	public String pageInsert(ModelMap model, @RequestParam(name = "id", required = false) int id) {
+	public String editPage(ModelMap model, @RequestParam(name = "id", required = false) int id) {
 
 		List<Country> list = null;
 		City city = null;
@@ -92,7 +92,7 @@ public class WorldController {
 	}
 
 	@RequestMapping("/insert")
-	public String insertCity(ModelMap model, @RequestParam(name = "idCity", required = false) String idCity,
+	public String editCity(ModelMap model, @RequestParam(name = "idCity", required = false) String idCity,
 			@RequestParam("name") String name, @RequestParam("code") String countryCode,
 			@RequestParam("dist") String district, @RequestParam("pop") int population) {
 		if (idCity != "") {
