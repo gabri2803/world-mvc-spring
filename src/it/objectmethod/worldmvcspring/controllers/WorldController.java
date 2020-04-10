@@ -17,7 +17,7 @@ import it.objectmethod.worldmvcspring.domain.City;
 import it.objectmethod.worldmvcspring.domain.Country;
 
 @Controller
-public class HomeController {
+public class WorldController {
 
 	@Autowired
 	private ICountryDao countryDao;
