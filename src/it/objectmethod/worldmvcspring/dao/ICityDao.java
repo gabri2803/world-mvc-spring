@@ -15,9 +15,9 @@ public interface ICityDao {
 
 	List<City> getCityByNameOrByCountry(String cityName, String country);
 
-	void postNewCity(String name, String countryCode, String district, int population);
+	void postNewCity(City city);
 
-	void putCity(int id, String name, String countryCode, String district, int population);
+	void putCity(City city);
 
 	City getCityById(int id);
 }

@@ -79,7 +79,6 @@ public class WorldController {
 
 	@RequestMapping("/page-insert")
 	public String editPage(ModelMap model, @RequestParam(name = "id", required = false) int id) {
-
 		List<Country> list = null;
 		City city = null;
 		if (id > -1) {
@@ -95,13 +94,21 @@ public class WorldController {
 	public String editCity(ModelMap model, @RequestParam(name = "idCity", required = false) String idCity,
 			@RequestParam("name") String name, @RequestParam("code") String countryCode,
 			@RequestParam("dist") String district, @RequestParam("pop") int population) {
+		String message = "Modifica avvenuta con successo.";
+		City city = new City();
+		city.setName(name);
+		city.setCountryCode(countryCode);
+		city.setDistrict(district);
+		city.setPopulation(population);
 		if (idCity != "") {
 			int id = Integer.parseInt(idCity);
-			cityDao.putCity(id, name, countryCode, district, population);
+			city.setId(id);
+			cityDao.putCity(city);
 		} else {
-			cityDao.postNewCity(name, countryCode, district, population);
+			cityDao.postNewCity(city);
 		}
 		listCities(model, countryCode);
+		model.put("message", message);
 		return "show-list-cities";
 	}
 }

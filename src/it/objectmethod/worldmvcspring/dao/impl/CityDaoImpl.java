@@ -147,17 +147,17 @@ public class CityDaoImpl implements ICityDao {
 	}
 
 	@Override
-	public void postNewCity(String name, String countryCode, String district, int population) {
+	public void postNewCity(City city) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
 			conn = ConnectionFactory.getConnection();
 			String sql = "INSERT INTO city (name, countryCode, district, population) VALUES (?, ?, ?, ?);";
 			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, name);
-			stmt.setString(2, countryCode);
-			stmt.setString(3, district);
-			stmt.setInt(4, population);
+			stmt.setString(1, city.getName());
+			stmt.setString(2, city.getCountryCode());
+			stmt.setString(3, city.getDistrict());
+			stmt.setInt(4, city.getPopulation());
 			stmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -179,18 +179,18 @@ public class CityDaoImpl implements ICityDao {
 	}
 
 	@Override
-	public void putCity(int id, String name, String countryCode, String district, int population) {
+	public void putCity(City city) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
 			conn = ConnectionFactory.getConnection();
 			String sql = "UPDATE city SET name= ?, countryCode= ?, district = ?, population = ? WHERE ID= ? ";
 			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, name);
-			stmt.setString(2, countryCode);
-			stmt.setString(3, district);
-			stmt.setInt(4, population);
-			stmt.setInt(5, id);
+			stmt.setString(1, city.getName());
+			stmt.setString(2, city.getCountryCode());
+			stmt.setString(3, city.getDistrict());
+			stmt.setInt(4, city.getPopulation());
+			stmt.setInt(5, city.getId());
 			stmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
