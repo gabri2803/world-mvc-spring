@@ -1,4 +1,4 @@
-package it.objectmethod.worldmvcspring.domain;
+package it.objectmethod.worldmvcspring.model;
 
 import org.springframework.stereotype.Component;
 

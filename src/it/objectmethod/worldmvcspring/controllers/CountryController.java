@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import it.objectmethod.worldmvcspring.dao.ICountryDao;
-import it.objectmethod.worldmvcspring.domain.Country;
+import it.objectmethod.worldmvcspring.model.Country;
 
 @Controller
 public class CountryController {

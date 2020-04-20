@@ -1,8 +1,5 @@
-package it.objectmethod.worldmvcspring.domain;
+package it.objectmethod.worldmvcspring.model;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class City {
 	private int id;
 	private String name;

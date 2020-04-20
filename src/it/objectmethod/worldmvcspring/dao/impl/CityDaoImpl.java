@@ -1,254 +1,77 @@
 package it.objectmethod.worldmvcspring.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 
-import it.objectmethod.worldmvcspring.config.ConnectionFactory;
 import it.objectmethod.worldmvcspring.dao.ICityDao;
-import it.objectmethod.worldmvcspring.domain.City;
+import it.objectmethod.worldmvcspring.model.City;
 
-@Component
-public class CityDaoImpl implements ICityDao {
+public class CityDaoImpl extends NamedParameterJdbcDaoSupport implements ICityDao {
 
 	@Override
 	public City getCityByName(String nameCity) {
 		City city = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = ConnectionFactory.getConnection();
-			String sql = "SELECT * FROM city WHERE Name = ?";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, nameCity);
-			rs = stmt.executeQuery();
-			while (rs.next()) {
-				city = new City();
-				city.setId(rs.getInt("ID"));
-				city.setCountryCode(rs.getString("CountryCode"));
-				city.setName(rs.getString("Name"));
-				city.setDistrict(rs.getString("District"));
-				city.setPopulation(rs.getInt("Population"));
-			}
-			rs.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException se2) {
-			} // nothing we can do
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
+		String sql = "SELECT * FROM city WHERE Name = ?";
+		BeanPropertyRowMapper<City> rm = new BeanPropertyRowMapper<City>(City.class);
+		city = getJdbcTemplate().queryForObject(sql, new Object[] { nameCity }, rm);
 		return city;
 	}
 
 	@Override
 	public List<City> getCitiesByCountryCode(String countryCode) {
 		List<City> list = new ArrayList<>();
-		City city = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = ConnectionFactory.getConnection();
-			String sql = "SELECT * FROM city WHERE city.CountryCode= ? ";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, countryCode);
-			rs = stmt.executeQuery();
-			while (rs.next()) {
-				city = new City();
-				city.setId(rs.getInt("ID"));
-				city.setCountryCode(rs.getString("CountryCode"));
-				city.setName(rs.getString("Name"));
-				city.setDistrict(rs.getString("District"));
-				city.setPopulation(rs.getInt("Population"));
-				list.add(city);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException se2) {
-			} // nothing we can do
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
+		String sql = "SELECT * FROM city WHERE city.CountryCode= ? ";
+		BeanPropertyRowMapper<City> rm = new BeanPropertyRowMapper<City>(City.class);
+		list = getJdbcTemplate().query(sql, new Object[] { countryCode }, rm);
 		return list;
 	}
 
 	@Override
 	public List<City> getCityByNameOrByCountry(String cityName, String country) {
 		List<City> list = new ArrayList<>();
-		City city = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = ConnectionFactory.getConnection();
-			String sql = "SELECT * FROM city JOIN country ON city.countrycode = country.code WHERE city.name LIKE ? "
-					+ "AND (? = '' OR country.code= ?) LIMIT 10";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, "%" + cityName + "%");
-			stmt.setString(2, country);
-			stmt.setString(3, country);
-			rs = stmt.executeQuery();
-			while (rs.next()) {
-				city = new City();
-				city.setId(rs.getInt("ID"));
-				city.setCountryCode(rs.getString("CountryCode"));
-				city.setName(rs.getString("Name"));
-				city.setDistrict(rs.getString("District"));
-				city.setPopulation(rs.getInt("Population"));
-				list.add(city);
-			}
-			rs.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException se2) {
-			} // nothing we can do
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
+		String sql = "SELECT * FROM city JOIN country ON city.CountryCode = country.Code WHERE city.Name LIKE :nomeInserito "
+				+ "AND (:codiceInserito = '' OR country.Code= :codiceInserito) LIMIT 10";
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("nomeInserito", cityName);
+		params.addValue("codiceInserito", country);
+		BeanPropertyRowMapper<City> rm = new BeanPropertyRowMapper<City>(City.class);
+		list = getNamedParameterJdbcTemplate().query(sql, params, rm);
 		return list;
-
 	}
 
 	@Override
 	public void postNewCity(City city) {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		try {
-			conn = ConnectionFactory.getConnection();
-			String sql = "INSERT INTO city (name, countryCode, district, population) VALUES (?, ?, ?, ?);";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, city.getName());
-			stmt.setString(2, city.getCountryCode());
-			stmt.setString(3, city.getDistrict());
-			stmt.setInt(4, city.getPopulation());
-			stmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException se2) {
-			} // nothing we can do
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
+		String sql = "INSERT INTO city (name, countryCode, district, population) VALUES (:nomeIns, :codiceIns, :distIns, :popIns);";
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("nomeIns", city.getName());
+		params.addValue("codiceIns", city.getCountryCode());
+		params.addValue("distIns", city.getDistrict());
+		params.addValue("popIns", city.getPopulation());
+		getNamedParameterJdbcTemplate().update(sql, params);
 	}
 
 	@Override
 	public void putCity(City city) {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		try {
-			conn = ConnectionFactory.getConnection();
-			String sql = "UPDATE city SET name= ?, countryCode= ?, district = ?, population = ? WHERE ID= ? ";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, city.getName());
-			stmt.setString(2, city.getCountryCode());
-			stmt.setString(3, city.getDistrict());
-			stmt.setInt(4, city.getPopulation());
-			stmt.setInt(5, city.getId());
-			stmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException se2) {
-			} // nothing we can do
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
+		String sql = "UPDATE city SET name= :nomeIns , countryCode= :codiceIns, district = :distIns, population = :popIns WHERE ID= :id ";
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("nomeIns", city.getName());
+		params.addValue("codiceIns", city.getCountryCode());
+		params.addValue("distIns", city.getDistrict());
+		params.addValue("popIns", city.getPopulation());
+		params.addValue("id", city.getId());
+		getNamedParameterJdbcTemplate().update(sql, params);
 	}
 
 	@Override
 	public City getCityById(int id) {
 		City city = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = ConnectionFactory.getConnection();
-			String sql = "SELECT * FROM city WHERE ID = ?";
-			stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, id);
-			rs = stmt.executeQuery();
-			while (rs.next()) {
-				city = new City();
-				city.setId(rs.getInt("ID"));
-				city.setCountryCode(rs.getString("CountryCode"));
-				city.setName(rs.getString("Name"));
-				city.setDistrict(rs.getString("District"));
-				city.setPopulation(rs.getInt("Population"));
-			}
-			rs.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null) {
-					stmt.close();
-				}
-			} catch (SQLException se2) {
-			} // nothing we can do
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
+		String sql = "SELECT * FROM city WHERE ID = ?";
+		BeanPropertyRowMapper<City> rm = new BeanPropertyRowMapper<City>(City.class);
+		city = getJdbcTemplate().queryForObject(sql, new Object[] { id }, rm);
 		return city;
 	}
 

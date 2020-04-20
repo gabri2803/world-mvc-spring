@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import it.objectmethod.worldmvcspring.domain.City;
+import it.objectmethod.worldmvcspring.model.City;
 
 @Component
 public interface ICityDao {
