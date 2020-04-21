@@ -33,7 +33,7 @@ public class CityDaoImpl extends NamedParameterJdbcDaoSupport implements ICityDa
 	@Override
 	public List<City> getCityByNameOrByCountry(String cityName, String country) {
 		List<City> list = new ArrayList<>();
-		String sql = "SELECT *, city.name name FROM city JOIN country ON city.CountryCode = country.Code WHERE city.Name LIKE :nomeInserito "
+		String sql = "SELECT *, city.name name, city.population population FROM city JOIN country ON city.CountryCode = country.Code WHERE city.Name LIKE :nomeInserito "
 				+ "AND (:codiceInserito = '' OR country.Code= :codiceInserito) LIMIT 10";
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("nomeInserito", "%" + cityName + "%");
